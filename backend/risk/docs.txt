@@ -1,0 +1,25 @@
+# Phase 7 – Risk Classification Module
+
+## Goal
+Build the risk‑tier assignment logic that consumes:
+* `EvidenceScore` from **Phase 5**.
+* `ScreeningResult` from **Phase 6**.
+
+Rules (Appendix E):
+1. If any screening status is `MATCH`, the overall risk is **HIGH** regardless of evidence.
+2. Else if evidence score ≥ 80 and screening = `CLEAR` → **LOW**.
+3. Evidence 50‑79 or screening `FLAGGED` → **MEDIUM**.
+4. Evidence < 50 → **HIGH**.
+
+Implementation:
+* New model `RiskClassification` linked one‑to‑one to the parsed document.
+* Celery task `classify_risk(parsed_doc_id)` pulls both EvidenceScore and ScreeningResult, applies rules, stores the tier and an explanation dict.
+* API endpoint `/api/risk/` returns `{tier: "LOW", reason: [...]}`.
+
+Tests:
+1. All four rule branches with mock evidence & screening values.
+2. Boundary tests at 49/50 and 79/80.
+3. Verify that a `MATCH` in screening forces HIGH even if score is high.
+4. Check that the explanation contains the correct rule description.
+
+All logic must be deterministic; use Decimal arithmetic for scores, and return strings exactly as in the spec ("LOW", "MEDIUM", "HIGH").

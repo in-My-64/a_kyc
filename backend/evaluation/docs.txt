@@ -1,0 +1,27 @@
+# Phase 11 – System‑Wide Integration & Evaluation
+
+## Goal
+Validate the entire KYC pipeline end‑to‑end with synthetic data and automated scripts.
+Tasks:
+1. Create a script that generates 100 fake customers, each with 2 documents (National ID + Passport). Use Faker to generate realistic data.
+2. For each customer:
+   * Register via `/api/customers/`.
+   * Upload the two documents (use the existing upload endpoint).
+   * Start KYC workflow (`/api/start-kyc/`).
+   * Poll status until `COMPLETED` or `FAILED`.
+3. After all workflows finish, run evaluation scripts:
+   * **OCR accuracy** – compare extracted text to the original synthetic data.
+   * **Regex precision / recall** – for each document type.
+   * **Evidence score distribution** – mean/median/std.
+   * **Risk consistency** – how many customers ended up in each tier.
+4. Store results in `docs/evaluation/report.md` and produce a JSON summary in `/tmp`.
+
+Testing:
+- Use pytest‑asyncio to run the script asynchronously.
+- Assert that all 100 workflows complete successfully (status=COMPLETED).
+- Check that at least 95% of OCR texts match original data (allowing minor differences).
+- Ensure no more than 5% of documents fail regex validation.
+
+Implementation details:
+* Use a Celery `chain` to orchestrate the entire workflow for each synthetic customer, but run them concurrently with asyncio gather for speed.
+* Keep logs in `/tmp/kyc_evaluation.log` and upload a summary JSON at the end.

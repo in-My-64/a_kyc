@@ -1,0 +1,13 @@
+path: datasets/zw_id
+train: images/train
+val: images/val
+names:
+  0: card
+  1: photo
+  2: id_number
+  3: surname
+  4: first_name
+  5: dob
+  6: village_of_origin
+  7: place_of_birth
+  8: date_of_issue

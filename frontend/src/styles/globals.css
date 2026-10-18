@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+/* ==================================================================
+   FONT
+   Raleway — one typeface for the whole system.
+   The custom property `--font-raleway` is set on `.app-shell`
+   (see _app.tsx). All font-family rules below are scoped to
+   `.app-shell` or its descendants so they can read that variable.
+   ================================================================== */
+
+@theme {
+  --font-sans: var(--font-raleway), Raleway, system-ui, sans-serif;
+  --font-mono: var(--font-raleway), Raleway, system-ui, sans-serif;
+}
+
+/* Nuclear override: every element inside the app wrapper, including
+   form controls and code elements that carry browser defaults. */
+.app-shell,
+.app-shell *,
+.app-shell *::before,
+.app-shell *::after,
+.app-shell input,
+.app-shell textarea,
+.app-shell button,
+.app-shell select,
+.app-shell code,
+.app-shell pre,
+.app-shell kbd,
+.app-shell samp,
+.app-shell .font-mono,
+.app-shell [class*="font-mono"] {
+  font-family: var(--font-raleway), Raleway, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* ==================================================================
+   DESIGN TOKENS
+   ================================================================== */
+
+:root {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --surface-hi: #f1f5f9;
+  --border: #e2e8f0;
+  --border-hi: #cbd5e1;
+  --fg: #0f172a;
+  --muted: #64748b;
+  --muted-2: #94a3b8;
+  --primary: #2563eb;
+  --primary-fg: #ffffff;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #dbeafe;
+  --primary-border: #93c5fd;
+  --navy: #0f172a;
+  --navy-2: #1e293b;
+  --navy-3: #334155;
+  --navy-fg: #e2e8f0;
+  --navy-muted: #94a3b8;
+  --success: #16a34a;
+  --success-soft: #dcfce7;
+  --success-border: #86efac;
+  --warning: #f59e0b;
+  --warning-soft: #fef3c7;
+  --warning-border: #fcd34d;
+  --danger: #ef4444;
+  --danger-soft: #fee2e2;
+  --danger-border: #fca5a5;
+  --info: #2563eb;
+  --info-soft: #dbeafe;
+  --info-border: #93c5fd;
+  --r-sm: 0.375rem;
+  --r: 0.5rem;
+  --r-lg: 0.75rem;
+  --shadow-xs: 0 1px 2px 0 rgb(15 23 42 / .04);
+  --shadow-sm: 0 1px 3px 0 rgb(15 23 42 / .06), 0 1px 2px -1px rgb(15 23 42 / .04);
+  --shadow-md: 0 4px 6px -1px rgb(15 23 42 / .07), 0 2px 4px -2px rgb(15 23 42 / .04);
+  --shadow-lg: 0 10px 15px -3px rgb(15 23 42 / .08), 0 4px 6px -4px rgb(15 23 42 / .04);
+}
+
+/* ==================================================================
+   BASE
+   ================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  /* Deliberately NOT setting font-family here. The variable wrapper
+     in _app.tsx sets it on the outer div, and modals inherit from
+     there — not from body. Setting it here would override the
+     wrapper's inheritance for portals. */
+}
+
+.app-shell {
+  font-weight: 600;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+.app-shell h1,
+.app-shell h2,
+.app-shell h3,
+.app-shell h4,
+.app-shell h5,
+.app-shell h6 {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.app-shell button,
+.app-shell label,
+.app-shell table th,
+.app-shell dt {
+  font-weight: 700;
+}
+
+.tabular-nums,
+[class*="tabular-nums"],
+table td,
+table th {
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.navy-scope {
+  --surface: var(--navy);
+  --surface-2: var(--navy-2);
+  --surface-hi: var(--navy-3);
+  --border: var(--navy-2);
+  --fg: var(--navy-fg);
+  --muted: var(--navy-muted);
+  color-scheme: dark;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* --- Sci-Fi Radar Scanner --- */
+@keyframes radar-sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes radar-pulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.radar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-soft);
+  background: radial-gradient(circle, var(--primary-soft) 0%, transparent 70%);
+}
+
+.radar-sweep {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 70%, var(--primary) 100%);
+  animation: radar-sweep 2s linear infinite;
+  mask-image: radial-gradient(circle, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle, black 30%, transparent 70%);
+}
+
+.radar-ping {
+  position: absolute;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  border: 2px solid var(--primary);
+  animation: radar-pulse 2s ease-out infinite;
+}

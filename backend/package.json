@@ -1,0 +1,14 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "KYC backend service",
+  "dependencies": {
+    "django": "^4.2",
+    "djangorestframework": "^3.14",
+    "celery": "^5.3"
+  },
+  "scripts": {
+    "start": "python manage.py runserver",
+    "migrate": "python manage.py migrate"
+  }
+}

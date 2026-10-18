@@ -1,0 +1,45 @@
+# Core
+Django==6.1.1                  # aligned with the running environment;
+                               # bump deliberately, not by pip resolving
+djangorestframework==3.15.1
+celery==5.4.0
+redis==5.0.4
+
+# Auth (TokenAuthentication is used by default; simplejwt only if you
+# switch to it — currently unused, so removed)
+# djangorestframework-simplejwt==5.3.1
+
+# Image / OCR
+opencv-python-headless==4.9.0.80
+numpy==1.26.4
+pytesseract==0.3.10
+Pillow==10.3.0
+pymupdf>=1.24                  # PDF rasterization (pure wheel)
+pillow-heif>=0.16              # HEIC/HEIF decode (pure wheel)
+
+# Screening
+rapidfuzz==3.9.0
+
+# Filtering (used by verification, screening, risk, audit viewsets)
+django-filter==24.2
+
+# Static files (prod only; harmless in dev)
+whitenoise==6.6.0
+
+# Database (prod only; sqlite works in dev)
+psycopg[binary]==3.1.19
+
+# Error reporting (optional; prod.py imports it lazily)
+sentry-sdk>=2.0
+
+# Testing / dev
+pytest==8.2.0
+pytest-django==4.8.0
+pytest-asyncio==0.23.7
+factory-boy==3.3.0
+Faker==25.0.0                  # pinned for reproducible CI
+httpx==0.27.0
+
+# Optional
+drf-yasg==1.21.7
+python-dotenv==1.0.1

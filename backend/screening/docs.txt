@@ -1,0 +1,27 @@
+# Phase 6 – 360° Assessment & FBC Screening Module
+
+## Goal
+Build the screening component that applies fuzzy‑matching against a watchlist.
+The API will accept an `id_number` (mandatory) and `name` (optional).
+It will:
+1. Check for **exact ID match** → `MATCH`
+2. Else compute `rapidfuzz.fuzz.token_sort_ratio(name)`
+   * ≥ 90  → `MATCH`
+   * 75‑89 → `FLAGGED`
+   * < 75  → `CLEAR`
+3. Store the result in an `ScreeningResult` model.
+4. Provide endpoints `/api/screenings/` and `/api/watchlist/`.
+5. Ensure each document type is evaluated per spec – a watchlist can contain many records; we just need one match to set status.
+
+Tests:
+1. Exact ID match returns `MATCH`.
+2. Name score ≥ 90 returns `MATCH`.
+3. Scores 75‑89 return `FLAGGED`, < 75 `CLEAR`.
+4. Boundary tests for 74, 75, 89, 90.
+5. Watchlist integration: create a watchlist entry and confirm match.
+
+Implementation details:
+* Use `rapidfuzz.fuzz.token_sort_ratio` from the library.
+* Store `watchlist_entries` as JSONField containing `{"id": str, "name": str}`.
+* Expose `ScreeningResultSerializer` with `status`, `details`.
+* Celery task `screen_document` can be called from the verification pipeline.

@@ -1,0 +1,32 @@
+# Phase 3 – OCR Extraction Module
+
+## Goal
+Wrap pytesseract in a Celery task and expose read-only access to
+extracted text and confidence.
+
+* **Model**: `OCRResult` – FK to Document (unique in practice, enforced
+  by a constraint), plus JSON `details` for run metadata.
+* **ViewSet**: `/api/ocr-results/` — GET list/detail, scoped to the
+  requesting user's documents. No POST — OCR is triggered by the
+  workflow chain, not by clients.
+* **Task**: `run_ocr_task(ocr_result_id, tracking_id=None)` reads the
+  binarized image referenced by `OCRResult.ocr_image_path` (falling back
+  to `Document.processed_file` for legacy rows), runs Tesseract once via
+  `image_to_data`, reconstructs line-preserving text from the layout
+  columns, and writes back `extracted_text`, `confidence`, and `details`.
+
+## Failure modes
+* **Tesseract binary missing** → `TesseractNotFoundError` → wrapped as
+  `RuntimeError`, not retried.
+* **Tesseract rejects the image** (corrupt input, missing language) →
+  `TesseractError` → wrapped as `ValueError`, not retried.
+* **Input file missing on disk** → `ValueError`, not retried.
+* **Transient I/O** (`OSError` family) → retried up to 3×.
+
+## Tests
+1. Upload a sample PNG; run the workflow; expect the OCRResult to have
+   non-empty `extracted_text`, `confidence` in [0, 100], and
+   `details.line_count >= 1`.
+2. Verify that a multi-line input produces a `text` with multiple
+   `\n`-separated lines (guards the layout reconstruction).
+3. Verify OCR fails gracefully if the resolved image path is missing.

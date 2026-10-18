@@ -1,0 +1,25 @@
+# Phase 12 – Hardening & Deployment
+
+## Goal
+Finalize security hardening, rate‑limiting, secrets management and deploy the stack with Docker.
+Tasks:
+1. **Rate limiting** – Add a DRF throttle class that limits unauthenticated requests to 10 per minute and authenticated to 1000 per hour.
+2. **CORS** – Configure `django-cors-headers` for allowed origins (frontend dev port 5173, prod domain).
+3. **HTTPS & HSTS** – Set `SECURE_SSL_REDIRECT`, `SECURE_HSTS_SECONDS` in settings.
+4. **Secrets** – Use environment variables; add `python-dotenv` and load `.env`. Create a helper function `get_env("VAR", default=None)` that raises if required env var missing.
+5. **Docker Compose** – Provide `docker-compose.yml` that builds the backend (Gunicorn + Nginx), frontend (Vite build served by Nginx) and Redis + PostgreSQL. Include healthchecks.
+6. **Swagger/OpenAPI** – Add `drf-yasg`, expose `/swagger/`. Use the custom schema generator to hide internal endpoints.
+7. **Audit & Logging** – Configure Django logging to write JSON logs for ELK stack integration.
+8. **Automated tests** – Docker‑Compose test service that runs `pytest` inside a container after services are up.
+
+Testing:
+- Verify rate limits by hitting `/api/customers/` 15 times as unauthenticated; expect 429 after 10.
+- Confirm CORS allows `http://localhost:5173` and blocks others.
+- Run Docker Compose up – ensure all containers start without errors.
+- Access Swagger at `http://localhost:8000/swagger/` and confirm it lists public endpoints only.
+
+Implementation details:
+* Add a custom throttle class in `backend/custom_throttle.py`.
+* Use `django-environ` for env loading.
+* Create a separate Dockerfile for the backend (Gunicorn) and one for frontend (copy built files into Nginx).
+* Keep secrets out of source by using `.env.example`.

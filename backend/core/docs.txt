@@ -1,0 +1,21 @@
+# Phase 9 – Backend Orchestration & Workflow API
+
+## Goal
+Tie together all prior phases into a single orchestration workflow that:
+1. Receives a new customer registration.
+2. Accepts one or more document uploads.
+3. Triggers the following chain of Celery tasks (in order):
+   - `preprocess_document` → `screen_document` → `classify_document` → `compute_evidence_score` → `classify_risk`.
+4. Exposes a single API endpoint `/api/start-kyc/` that starts the flow and returns an immediate response with a tracking ID.
+5. Provides status updates via a GET to `/api/status/<tracking_id>/` which reflects the current step and any failures.
+
+Implementation details:
+* Create `KYCWorkflow` model with fields: `customer`, `status` (PENDING, IN_PROGRESS, COMPLETED, FAILED), `current_step`, `created_at`, `updated_at`. Store Celery task IDs to track progress.
+* A Celery chain (`chain()`) orchestrates the tasks. Each task updates the workflow status on completion or failure.
+* Status endpoint queries the workflow instance and returns JSON `{tracking_id, status, current_step}`.
+
+Tests:
+1. POST to `/api/start-kyc/` with a new user + document should create a KYCWorkflow in PENDING state.
+2. Simulate task completion by calling each Celery task manually; verify workflow updates status and current step accordingly.
+3. Verify that a failure in any task sets `status=FAILED` and stops the chain.
+4. Ensure the status endpoint returns accurate data.

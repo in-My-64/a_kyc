@@ -1,0 +1,13 @@
+# DocumentUpload
+
+## Description
+Create a `Document` model, serializer and API for uploading documents.
+Each customer can have many documents. The upload endpoint will accept
+multipart files and store the file path in the database. No heavy
+processing yet – that will be handled by Celery later.
+
+The tests will:
+1. Post a sample image (a simple PNG) to `/api/documents/`.
+2. Verify 201 Created response.
+3. Ensure the file is stored and linked to the customer.
+4. Reject uploads without an authenticated user or missing file.

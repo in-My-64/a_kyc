@@ -1,0 +1,21 @@
+# Phase 4 – Regex-Based Rule Classification Module
+
+## Goal
+Implement document field extraction and validation against Spec Appendix A & B.
+
+* **Model**: `ParsedDocument` linked one‑to‑one with `OCRResult`.
+* Fields: `id_number`, `name`, `dob`, `expiry`, `nationality`, each nullable.
+* **Task**: `classify_document(doc_id)` performs regex matching, applies OCR‑confusion auto‑correction map (B), and saves field values. On failure set to None.
+
+Tests:
+1. Feed synthetic OCR data for a National ID – expect correct extraction.
+2. Pass OCR text with common confusions – confirm map applied before regex.
+3. Unsupported doc type handled gracefully (all fields None).
+4. Boundary regex test: value exactly matching pattern should pass, just below fails.
+
+Implementation details:
+* Use `re.fullmatch` with patterns from Appendix A.
+* Map corrections before applying regex.
+* Log every correction applied – store in a JSON field `corrections` on ParsedDocument.
+
+Add this to urls and update the progress log.

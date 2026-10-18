@@ -1,0 +1,24 @@
+# Phase 8 – Audit Log Module
+
+## Goal
+Implement a comprehensive audit trail that captures every significant action in the KYC pipeline:
+1. User creation / authentication events.
+2. Document upload, OCR extraction, classification, risk assignment, etc.
+3. Store audit entries in a single table `AuditLogEntry` with fields: `action`, `user_id`, `timestamp`, `details` (JSON), `success` (bool).
+
+Requirements:
+* Middleware that logs each request/response pair for endpoints under `/api/`.
+* Signals on model `post_save` for key models (`Customer`, `Document`, `OCRResult`, `EvidenceScore`, `RiskClassification`).
+* Redaction – any PII fields (email, id_number, etc.) must be removed from the logged `details`. Log a placeholder like `[REDACTED]`.
+* Read‑only API endpoint `/api/audit/` that returns entries with pagination. Use DRF's generic view.
+
+Tests:
+1. Uploading a document should create an audit entry with action "document_uploaded" and redact the file path.
+2. Performing OCR triggers an entry "ocr_completed".
+3. Changing risk classification logs "risk_assigned".
+4. Verify that PII is not present in `details`.
+
+Implementation details:
+* Use Django’s built‑in signals (`post_save`) to trigger logging.
+* Middleware captures request body & headers – but only for POST/PUT/PATCH on `/api/`.
+* Provide a custom renderer or serializer that masks PII keys.
